@@ -3,6 +3,7 @@
 using namespace std;
 
 int main() {
-  cout << sizeof(int) << " " << sizeof(long) << " " << endl;
+  cout << (1 ^ 0) << endl;
+  cout << (true ^ false) << endl;
   return 0;
 }

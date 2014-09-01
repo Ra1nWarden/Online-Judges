@@ -40,13 +40,10 @@ int main() {
             }
         }
         map<int, int> countMap;
-        int extra = 0;
-        for (int j = 1; j <= total * 2; j++) {
+        for (int j = total + 1; j <= total * 2; j++) {
             int root = findSet(j);
             cout << "root for index " << j << " is " << root << endl;
-            if (root == j)
-                    extra++;
-            else if (root <= total) {
+            if (root <= total) {
                 if (countMap.count(root) == 0) {
                     countMap[root] = 1;
                 } else {

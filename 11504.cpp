@@ -8,9 +8,9 @@
 using namespace std;
 
 int n;
-int dfsnum[100001];
-int dfslow[100001];
 int dfsCount;
+map<int, int> dfsnum;
+map<int, int> dfslow;
 set<int> in_stack;
 stack<int> scc;
 map<int, vector<int> > adj;
@@ -27,7 +27,7 @@ void tarjan(int u) {
   in_stack.insert(u);
   for(int i= 0; i < adj[u].size(); i++) {
     int next = adj[u][i];
-    if(dfsnum[next] == -1) {
+    if(dfsnum.count(next) == 0) {
       tarjan(next);
       dfslow[u] = min(dfslow[u], dfslow[next]);
     }
@@ -69,15 +69,15 @@ int main() {
 	adj[x].push_back(y);
       }
     }
-    memset(dfsnum, -1, sizeof dfsnum);
-    memset(dfslow, -1, sizeof dfslow);
     dfsCount = 0;
+    dfsnum.clear();
+    dfslow.clear();
     while(!scc.empty())
       scc.pop();
     in_stack.clear();
     sccv.clear();
     for(int i= 1;i <= n; i++) {
-      if(dfsnum[i] == -1) 
+      if(dfsnum.count(i) == 0) 
 	tarjan(i);
     }
 
@@ -124,72 +124,29 @@ int main() {
     }
 
     int newn = reducedadj.size();
-
-    vector<vector<int> > newadjMat;
-    for(int i= 0; i < newn; i++) {
-      vector<int> emptyRow(newn, 0);
-      newadjMat.push_back(emptyRow);
-    }
     
-    for(int i = 0; i < newn; i++) {
-      for(int j = 0; j < reducedadj[i].size(); j++) {
-	int start = i;
-	int end = reducedadj[i][j];
-	newadjMat[start][end] = 1;
+    vector<int> inDegree(newn, 0);
+
+    for(int i= 0; i < newn; i++) {
+      for(int j= 0; j < reducedadj[i].size(); j++) {
+	inDegree[reducedadj[i][j]]++;
       }
-    }
+    } 
 
     if(DEBUG) {
-      cout << "adjmatrix: " << endl;
-      for(int i= 0; i < newn; i++) {
-	for(int j= 0; j < newn; j++) {
-	  cout << newadjMat[i][j];
-	}
-	cout << endl;
-      }
-      cout << endl;
+      cout << "printing inDegrees:" << endl;
+      for(int i= 0; i < newn; i++)
+	cout << i << " has indegree " << inDegree[i] << endl;
     }
     
-    vector<bool> visited(newn, false);
     int knock = 0;
-    int knocked = 0;
-    while(knocked < newn) {
-      int nextNode = -1;
-      for(int j = 0; j < newn; j++) {
-	if(visited[j])
-	  continue;
-	bool ok = true;
-	for(int i = 0; i < newn; i++) {
-	  if(newadjMat[i][j] != 0 && !visited[i]) {
-	    ok = false;
-	    break;
-	  }
-	}
-	if(ok) {
-	  nextNode = j;
-	}
-      }
-      if(DEBUG) {
-	cout << "kncoking " << nextNode << endl;
-      }
-      stack<int> s;
-      visited[nextNode] = true;
-      knocked++;
-      s.push(nextNode);
-      while(!s.empty()) {
-	int next = s.top();
-	s.pop();
-	for(int i = 0; i < newn; i++) {
-	  if(newadjMat[next][i] && !visited[i]) {
-	    visited[i] = true;
-	    knocked++;
-	    s.push(i);
-	  }
-	}
-      }
-      knock++;
+    for(int i= 0; i < newn; i++) {
+      if(inDegree[i] == 0)
+	knock++;
     }
+
     cout << knock << endl;
+
   }
   return 0;
 }

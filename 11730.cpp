@@ -42,16 +42,30 @@ int main() {
 	dp[i][i+primefact[j]] = 1;
     }
     for(int j= i+1; j <= 1000; j++) {
-      if(dp[i][j] == -1) {
-	for(int k = i+1; k < j; k++) {
-	  if(dp[i][k] != -1 && dp[k][j] != -1) {
-	    if(dp[i][j] == -1)
-	      dp[i][j] = dp[i][k] + dp[k][j];
-	    else
-	      dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j]);
+      if(dp[i][j] != -1) {
+	vector<int> nextprime = facts[j];
+	for(int k =0; k < nextprime.size(); k++) {
+	  if(nextprime[k] == j)
+	    continue;
+	  if(j + nextprime[k] > 1000)
+	    break;
+	  else {
+	    if(dp[i][j+nextprime[k]] == -1 || dp[i][j+nextprime[k]] > dp[i][j] + 1)
+	      dp[i][j+nextprime[k]] = dp[i][j] + 1;
 	  }
 	}
       }
+
+      // if(dp[i][j] == -1) {
+      // 	for(int k = i+1; k < j; k++) {
+      // 	  if(dp[i][k] != -1 && dp[k][j] != -1) {
+      // 	    if(dp[i][j] == -1)
+      // 	      dp[i][j] = dp[i][k] + dp[k][j];
+      // 	    else
+      // 	      dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j]);
+      // 	  }
+      // 	}
+      // }
     }
   }
   

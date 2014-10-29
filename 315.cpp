@@ -5,7 +5,7 @@
 
 using namespace std;
 
-bool DEBUG = false;
+bool DEBUG = true;
 
 int v[100][100];
 int n;
@@ -29,8 +29,11 @@ void articulationPoint(int u) {
 	if(DEBUG)
 	  cout << "calling from " << u << " to " << i << endl;
 	articulationPoint(i);
-	if(dfslow[i] >= dfsnum[u])
+	if(dfslow[i] >= dfsnum[u]) {
 	  articulation_vertex[u] = true;
+	  cout << "dfslow for " << i << " is " << dfslow[i] << endl;
+	  cout << "dfsnum for " << u << " is " << dfsnum[u] << endl;
+	}
 	dfslow[u] = min(dfslow[u], dfslow[i]);
       } 
       else if(i != dfsparent[u])
@@ -91,6 +94,7 @@ int main() {
 	cout << dfslow[i];
       }
       cout << endl;
+      cout << "children count: " << rootChildren << endl;
     }
 
     int result = 0;

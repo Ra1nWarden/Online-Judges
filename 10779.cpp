@@ -60,11 +60,15 @@ int main() {
 	for(int k = 1; k <= m; k++) {
 	  if(stickers[k] == 0) {
 	    adjMat[k][i] = 1;
+	    adjMat[i][k] = 0;
 	    initOrAdd(k, i);
+	    initOrAdd(i, k);
 	  }
 	  else if (stickers[k] > 1) {
 	    adjMat[i][k] = stickers[k] - 1;
+	    adjMat[k][i] = 0;
 	    initOrAdd(i, k);
+	    initOrAdd(k, i);
 	  }
 	}
       }
@@ -72,7 +76,9 @@ int main() {
 	for(int k = 1; k <= m; k++) {
 	  if(stickers[k] > 0) {
 	    adjMat[i][k] = stickers[k];
+	    adjMat[k][i] = 0;
 	    initOrAdd(i, k);
+	    initOrAdd(k, i);
 	  }
 	}
       }

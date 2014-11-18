@@ -5,7 +5,7 @@
 #include <queue>
 #include <cstring>
 #define INF 2e8
-#define EPS 1e-8
+#define EPS 1e-20
 
 using namespace std;
 
@@ -17,7 +17,7 @@ int s, t, f;
 map<int, int> p;
 
 double caldistance(coord a, coord b) {
-  return sqrt(pow(abs(a.first - b.first), 2) + pow(abs(a.second - b.second), 2));
+  return sqrt((double) (a.first - b.first) * (double) (a.first - b.first)  + (double) (a.second - b.second) * (double) (a.second - b.second));
 }
 
 void insertOrAdd(int a, int b) {
@@ -83,28 +83,28 @@ int main() {
 	coord next = interest[j];
 	double newDist = caldistance(start, next) + caldistance(next, end);
 	//cout << newDist << " vs " << dist << endl;
-	if(dist * 2 >= newDist || fabs(dist * 2 - newDist) < EPS) {
+	if(dist + dist >= newDist || fabs(dist + dist - newDist) < EPS) {
 	  //cout << "connecting " << indexMap[start] << " with " << indexMap[next] << endl;
 	  adjMat[indexMap[start]][indexMap[next]] = 1;
 	  //adjMat[indexMap[next]][indexMap[start]] = 0;
 	  insertOrAdd(indexMap[start], indexMap[next]);
-	  //insertOrAdd(indexMap[next], indexMap[start]);
+	  insertOrAdd(indexMap[next], indexMap[start]);
 	}
       }
     }
     
     for(int i= 1; i <= n; i++) {
-      adjMat[0][i] = 1;
+      adjMat[s][i] = 1;
       //adjMat[i][0] = 0;
-      insertOrAdd(0, i);
-      //insertOrAdd(i, 0);
+      insertOrAdd(s, i);
+      insertOrAdd(i, s);
     }
     
     for(int j = n+1; j <= n+m; j++) {
-      adjMat[j][m+n+1] = 1;
+      adjMat[j][t] = 1;
       //adjMat[m+n+1][j] = 0;
-      insertOrAdd(j, m+n+1);
-      //insertOrAdd(m+n+1, j);
+      insertOrAdd(j, t);
+      insertOrAdd(t, j);
     }
 
     // for(int i = 0; i <= m+n+1; i++) {
@@ -153,12 +153,12 @@ int main() {
     // }
     
     vector<coord> result;
-    for(int i= 0; i< n; i++) {
+    for(int i= 0; i< bob.size(); i++) {
       coord next = bob[i];
       result.push_back(next);
       vector<int> nextAdj = adjList[indexMap[next]];
       for(int j = 0; j < nextAdj.size(); j++) {
-	if(adjMat[indexMap[next]][nextAdj[j]] == 0) {
+	if(adjMat[indexMap[next]][nextAdj[j]] == 0 && adjMat[nextAdj[j]][indexMap[next]] == 1 && nextAdj[j] != s) {
 	  result.push_back(interest[nextAdj[j] - n - 1]);
 	  break;
 	}

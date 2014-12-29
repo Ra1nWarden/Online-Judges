@@ -25,7 +25,6 @@ pair<ll, ll> SolveDiophantine(ll a, ll b, ll c) {
   return make_pair(sol.first * c / result, sol.second * c / result);
 }
 
-
 int main() {
   ll a, b;
   while(cin >> a >> b) {

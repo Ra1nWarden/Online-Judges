@@ -5,8 +5,8 @@
 #include <utility>
 #include <cstdio>
 
-#define INF 2e8
 #define EPS 1e-8
+#define INF 2e8
 #define PI 3.141592653589793
 #define RADIUS 6378
 
@@ -15,19 +15,21 @@ using namespace std;
 map<string, pair<double, double> > cityMap;
 map<string, int> indexMap;
 
-double dist[101][101];
+long long dist[101][101];
 
 double distanceCalc(const pair<double, double>& one, const pair<double, double>& two) {
   double lat1 = fabs(one.first);
-  lat1 = lat1 / 180 * PI;
+  lat1 *= PI / 180.0;
   double lat2 = fabs(two.first);
-  lat2 = lat2 / 180 * PI;
+  lat2 *= PI / 180.0;
   double lon1 = one.second;
-  lon1 = lon1 / 180 * PI;
+  lon1 *= PI / 180.0;
   double lon2 = two.second;
-  lon2 = lon2 / 180 * PI;
+  lon2 *= PI / 180.0;
 
-  return RADIUS*sqrt(2-2*(cos(lat1)*cos(lat2)*cos(lon1-lon2)+sin(lat1)*sin(lat2)));
+  return RADIUS * acos(cos(lat1) * cos(lon1) * cos(lat2) * cos(lon2) +
+		       cos(lat1) * sin(lon1) * cos(lat2) * sin(lon2) +
+		       sin(lat1) * sin(lat2));
 }
 
 int main() {
@@ -58,7 +60,7 @@ int main() {
       iss >> start >> end;
       pair<double, double> startCoord = cityMap[start];
       pair<double, double> endCoord = cityMap[end];
-      dist[indexMap[start]][indexMap[end]] = distanceCalc(startCoord, endCoord);
+      dist[indexMap[start]][indexMap[end]] = (long long) (distanceCalc(startCoord, endCoord) + 0.5 + EPS);
     }
 
     for(int k= 0; k < n; k++) {
@@ -76,11 +78,13 @@ int main() {
       istringstream iss(line.c_str());
       string start, end;
       iss >> start >> end;
-      double result = dist[indexMap[start]][indexMap[end]];
-      if(result != INF)
-	printf("%d km\n", (int) (result + 0.5 + EPS));
+      long long result = dist[indexMap[start]][indexMap[end]];
+      if(result != INF) {
+	//printf("DEBUG DIST: %lf\n", result);
+	printf("%lld km\n", result);
+      }
       else
-	printf("not route exists\n");
+	printf("no route exists\n");
     }
     
   }

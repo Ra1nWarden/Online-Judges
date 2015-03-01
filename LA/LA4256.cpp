@@ -33,7 +33,7 @@ int main() {
   scanf("%d", &tc);
   while(tc--) {
     scanf("%d %d", &n, &m);
-    for(int i= 0; i < n; i++)
+    for(int i= 1; i <= n; i++)
       adjList[i].clear();
     for(int i =0; i < m; i++) {
       int a, b;

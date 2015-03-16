@@ -10,9 +10,11 @@ using namespace std;
 
 int n, m;
 char str[MAXS][MAXS];
+int count[MAXS][MAXS];
 int x, y;
 char pat[MAXP][MAXP];
 bool match[MAXS][MAXS][MAXP];
+int res;
 
 struct AhoCorasickAutomata {
   int trie[MAXNODE][128];
@@ -75,7 +77,11 @@ struct AhoCorasickAutomata {
 	while(add != 0) {
 	  for(int j = 0; j < val[add].size(); j++) {
 	    //printf("setting %d %d %d to true\n", row, i, j);
-	    match[row][i][val[add][j]] = true;
+	    if(row - val[add][j] > -1) {
+	      count[row - val[add][j]][i]++;
+	      if(count[row - val[add][j]][i] == x)
+		res++;
+	    }
 	  }
 	  add = last[add];
 	}
@@ -84,7 +90,11 @@ struct AhoCorasickAutomata {
 	while(add != 0) {
 	  for(int j = 0; j < val[add].size(); j++) {
 	    //printf("setting %d %d %d to true\n", row, i, j);
-	    match[row][i][val[add][j]] = true;
+	     if(row - val[add][j] > -1) {
+	      count[row - val[add][j]][i]++;
+	      if(count[row - val[add][j]][i] == x)
+		res++;
+	    }
 	  }
 	  add = last[add];
 	}
@@ -108,25 +118,10 @@ int main() {
       ac.insert(pat[i], i);
     }
     ac.init();
-    memset(match, false, sizeof match);
+    memset(count, 0, sizeof count);
+    res = 0;
     for(int i = 1; i <= n; i++) {
       ac.find(str[i], i);
-    }
-    int res = 0;
-    for(int i = 1; i <= n; i++) {
-      for(int j = 0; j < m; j++) {
-	if(match[i][j][1]) {
-	  bool ok = true;
-	  for(int k = 1; k < x; k++) {
-	    if(!match[i+k][j][1+k]) {
-	      ok = false;
-	      break;
-	    }
-	  }
-	  if(ok)
-	    res++;
-	}
-      }
     }
     printf("%d\n", res);
   }

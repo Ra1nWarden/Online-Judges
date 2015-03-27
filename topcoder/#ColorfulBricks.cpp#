@@ -1,0 +1,50 @@
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <utility>
+#include <vector>
+#include <string>
+#include <cstdio>
+
+using namespace std;
+
+// @begin_lib
+// @end_lib
+
+class ColorfulBricks {
+public:
+  int countLayouts(string bricks) {
+    
+  }
+};
+
+// @begin_tests
+void _run_test(string bricks, int res_expected, int test_no) {
+int tc_res = (new ColorfulBricks)->countLayouts(bricks);
+if (tc_res == res_expected)
+cout << "--- test " << test_no << ": ok ---" << endl;
+else {
+cout << "--- test " << test_no << ": failed ---" << endl;
+cout << "expected: ";
+cout << res_expected;
+cout << endl << "got: ";
+cout << tc_res;
+cout << endl;
+}
+}
+int main() {
+string bricks;
+int res_expected;
+bricks = "ABAB";
+res_expected = 2;
+_run_test(bricks, res_expected, 0);
+bricks = "AAA";
+res_expected = 1;
+_run_test(bricks, res_expected, 1);
+bricks = "WXYZ";
+res_expected = 0;
+_run_test(bricks, res_expected, 2);
+}
+// @end_tests
+
+// Born in Emacs

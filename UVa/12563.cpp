@@ -32,21 +32,31 @@ int main() {
     for(int i = 1; i <= n; i++) {
       for(int j = 1; j <= t; j++) {
 	if(v[i-1] < j) {
-	  dp[i][j] = max(dp[i-1][j], dp[i-1][j-v[i-1]] + 1);
-	  dpv[i][j] = max(dpv[i][j], dpv[i-1][j-v[i-1]] + v[i-1]);
+	  if(dp[i-1][j] < dp[i-1][j-v[i-1]] + 1) {
+	    dp[i][j] = dp[i-1][j-v[i-1]] + 1;
+	    dpv[i][j] = dpv[i-1][j-v[i-1]] + v[i-1];
+	  }
+	  else if(dp[i-1][j] == dp[i-1][j-v[i-1]] + 1) {
+	    dp[i][j] = dp[i-1][j];
+	    dpv[i][j] = max(dpv[i-1][j], dpv[i-1][j-v[i-1]] + v[i-1]);
+	  } else {
+	    dp[i][j] = dp[i-1][j];
+	    dpv[i][j] = dpv[i-1][j];
+	  }
 	}
 	else {
 	  dp[i][j] = dp[i-1][j];
 	  dpv[i][j] = dpv[i-1][j];
 	}
-	if(dpv[i][j] > maxval) {
-	  maxval = dpv[i][j];
-	  ans = dp[i][j];
-	}
+	if(dp[i][j] > maxval) {
+	  maxval = dp[i][j];
+	  ans = dpv[i][j];
+	} else if(dp[i][j] == maxval)
+	  ans = max(ans, dpv[i][j]);
       }
     }
     
-    printf("Case %d: %d %d\n", kase, ans + 1, maxval + 678);
+    printf("Case %d: %d %d\n", kase, maxval + 1, ans + 678);
   }
   return 0;
 }

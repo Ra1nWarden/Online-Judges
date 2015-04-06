@@ -2,12 +2,12 @@
 #include <sstream>
 #include <algorithm>
 #include <utility>
+#include <stack>
 #include <vector>
 #include <string>
 #include <cstdio>
-#include <map>
-#include <queue>
-#define INF 2e9
+#include <cstring>
+#define MAXN 55
 
 using namespace std;
 
@@ -16,79 +16,50 @@ using namespace std;
 
 class JanuszTheBusinessman {
 private:
-  int adjMat[732][732];
-  map<int, int> p;
-  map<int, vector<int> > adjList;
-  int f, s, t;
+  bool adjMat[MAXN][MAXN];
+  bool visited[MAXN];
+  int n;
 public:
-  void augmentPath(int v, int minEdge) {
-    if(v == s) {
-      f= minEdge;
-      return;
-    } else if (p.count(v)) {
-      augmentPath(p[v], min(minEdge, adjMat[p[v]][v]));
-      adjMat[p[v]][v] -= f;
-      adjMat[v][p[v]] += f;
+  void dfs(int u) {
+    stack<int> s;
+    s.push(u);
+    while(!s.empty()) {
+      int next = s.top();
+      s.pop();
+      for(int i = 0; i < n; i++) {
+	if(adjMat[next][i] && !visited[i]) {
+	  visited[i] = true;
+	  s.push(i);
+	}
+      }
     }
   }
   int makeGuestsReturn(vector <int> arrivals, vector <int> departures) {
-    memset(adjMat, -1, sizeof adjMat);
-    for(int i = 1; i <= arrivals.size(); i++) {
-      adjMat[0][i] = 1;
-      adjList[0].push_back(i);
-      adjList[i].push_back(0);
-      adjMat[i+365][731] = 1;
-      adjList[i+365].push_back(731);
-      adjList[731].push_back(i+365);
-      bool matched = false;
-      for(int j = i+1; j <= arrivals.size(); j++) {
-	int a1 = arrivals[i];
-	int b1 = departures[i];
-	int a2 = arrivals[j];
-	int b2 = departures[j];
-	if(!(b1 < a2 || b2 < a1)) {
-	  adjMat[i][j+365] = 1;
-	  adjList[i].push_back(j+365);
-	  adjList[j+365].push_back(i);
-	  matched = true;
+    n = arrivals.size();
+    memset(adjMat, false, sizeof adjMat);
+    for(int i = 0; i < n; i++) {
+      for(int j = i + 1; j < n; j++) {
+	//cout << i << " and " << j << endl;
+	bool connected = (arrivals[i] > arrivals[j] && arrivals[i] <= departures[j]);
+	//cout << "after one " << connected << endl;
+	connected = connected || (arrivals[j] > arrivals[i] && arrivals[j] <= departures[i]);
+	//cout << "after two " << connected << endl;
+	if(connected) {
+	  //cout << "connecting " << i << " and " << j << endl;
+	  adjMat[i][j] = adjMat[j][i] = true;
 	}
       }
-      if(!matched) {
-	adjMat[i][i+365] = 1;
-	adjList[i].push_back(i+365);
-	adjList[i+365].push_back(i);
+    }
+    int component = 0;
+    memset(visited, false, sizeof visited);
+    for(int i = 0; i < n; i++) {
+      if(!visited[i]) {
+	visited[i] = true;
+	dfs(i);
+	component++;
       }
     }
-    int max_flow = 0;
-    s = 0;
-    t = 731;
-    while(true) {
-      f = 0;
-      queue<int> q;
-      map<int, int> dist;
-      q.push(s);
-      dist[s] = 0;
-      while(!q.empty()) {
-	int u = q.front();
-	q.pop();
-	if(u == t)
-	  break;
-	vector<int> adj = adjList[u];
-	for(int j = 0; j < adj.size(); j++) {
-	  int v = adj[j];
-	  if(adjMat[u][v] > 0 && !dist.count(v)) {
-	    dist[v] = dist[u] + 1;
-	    q.push(v);
-	    p[v] = u;
-	  }
-	}
-      }
-      augmentPath(t, INF);
-      if(f == 0)
-	break;
-      max_flow += f;
-    }
-    return max_flow;
+    return component;
   }
 };
 

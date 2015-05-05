@@ -8,9 +8,9 @@ int counter;
 char ans[MAXL];
 bool visited[3000][3000];
 
-int dx[] = {-1, 0, 0, 1};
-int dy[] = {0, -1, 1, 0};
-char dir[] = "wsne";
+int dx[] = {1, 0, 0, -1};
+int dy[] = {0, 1, -1, 0};
+char dir[] = "ensw";
 int basex = 1500;
 int basey = 1500;
 

@@ -7,8 +7,8 @@
 using namespace std;
 
 struct Edge {
-  int u, v, a, b, t;
-  Edge(int uu, int vv, int aa, int bb, int tt) : u(uu), v(vv), a(aa), b(bb), t(tt) {}
+  int from, to, t1, t2, t3;
+  Edge(int u, int v, int a, int b, int t) : from(u), to(v), t1(a), t2(b), t3(t) {}
 };
 
 int n, m, s, t;
@@ -29,9 +29,7 @@ int main() {
       int u, v, a, b, time;
       scanf("%d %d %d %d %d", &u, &v, &a, &b, &time);
       edges.push_back(Edge(u, v, a, b, time));
-      edges.push_back(Edge(v, u, a, b, time));
-      graph[u].push_back(edges.size() - 2);
-      graph[v].push_back(edges.size() - 1);
+      graph[u].push_back(edges.size() - 1);
     }
     memset(visited, false, sizeof visited);
     for(int i = 1; i <= n; i++)
@@ -43,23 +41,22 @@ int main() {
       HeapNode next = pq.top();
       pq.pop();
       int u = next.second;
-      int cst = next.first;
       if(visited[u])
 	continue;
       visited[u] = true;
       for(int i = 0; i < graph[u].size(); i++) {
 	Edge& e = edges[graph[u][i]];
-	if(e.t <= e.a) {
-	  int left = cst % (e.a + e.b);
+	if(e.t3 <= e.t1) {
+	  int left = d[u] % (e.t1 + e.t2);
 	  int cost = INF;
-	  if(e.a - left >= e.t) {
-	    cost = e.t;
+	  if(e.t1 - left >= e.t3) {
+	    cost = e.t3;
 	  } else {
-	    cost = e.a + e.b - left + e.t;
+	    cost = e.t1 + e.t2 - left + e.t3;
 	  }
-	  if(d[e.v] > cost + d[u]) {
-	    d[e.v] = cost + d[u];
-	    pq.push(make_pair(cost + d[u], e.v));
+	  if(d[e.to] > cost + d[u]) {
+	    d[e.to] = cost + d[u];
+	    pq.push(make_pair(cost + d[u], e.to));
 	  }
 	}
       }

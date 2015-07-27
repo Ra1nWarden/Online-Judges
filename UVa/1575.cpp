@@ -55,7 +55,7 @@ void updateAns(vector<int> counts, LL product) {
 void generateAns(vector<int> counts, LL product) {
   LL maxPrime = maxVal / product;
   int nextPrime = primes[counts.size()];
-  if(maxPrime > nextPrime) {
+  if(maxPrime >= nextPrime) {
     vector<int> newcounts = counts;
     newcounts.push_back(1);
     updateAns(newcounts, product*nextPrime);
@@ -63,7 +63,7 @@ void generateAns(vector<int> counts, LL product) {
   }
   if(counts.size() > 0) {
     int prevPrime = primes[counts.size() - 1];
-    if(maxPrime > prevPrime && (counts.size() == 1 || counts[counts.size() - 1] < counts[counts.size() - 2])) {
+    if(maxPrime >= prevPrime && (counts.size() == 1 || counts[counts.size() - 1] < counts[counts.size() - 2])) {
       vector<int> newcounts = counts;
       newcounts[newcounts.size() - 1]++;
       updateAns(newcounts, product*prevPrime);
@@ -77,7 +77,6 @@ int main() {
   primes = generatePrime(100);
   vector<int> counts;
   generateAns(counts, 1ULL);
-  printf("size is %d\n", ans.size());
   while(scanf("%llu", &n) != EOF) {
     printf("%llu %llu\n", n, ans[n]);
   }

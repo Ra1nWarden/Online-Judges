@@ -1,77 +1,72 @@
 #include <cstdio>
+#include <map>
+#include <string>
 #include <vector>
-#include <cstring>
-#include <cstdlib>
-#include <algorithm>
-#define MAXL 25
+#define MAXN 1005
 
 using namespace std;
 
-typedef pair<int, int> II;
+int cnt;
+map<string, int> id;
 
+struct Component {
+  int price, quality;
+};
 int n, b;
-char t[MAXL];
-char prevt[MAXL];
-char name[MAXL];
-vector<int> resv;
-vector<vector<II> > v;
+vector<Component> comp[MAXN];
 
-bool _cmp(const II& one, const II& two) {
-  return one.second < two.second;
+bool ok(int q) {
+  int sum = 0;
+  for(int i = 0; i < cnt; i++) {
+    int cheapest = b + 1, m = comp[i].size();
+    for(int j = 0; j < m; j++) {
+      if(comp[i][j].quality >= q)
+	cheapest = min(cheapest, comp[i][j].price);
+    }
+    sum += cheapest;
+    if(sum > b)
+      return false;
+  }
+  return true;
 }
 
-int ok(int quality) {
-  int price = 0;
-  for(int i = 0; i < v.size(); i++) {
-    price += (lower_bound(v[i].begin(), v[i].end(), make_pair(0, quality), _cmp))->first;
+int getId(string s) {
+  if(id.count(s) == 0) {
+    return id[s] = cnt++;
   }
-  return price <= b;
-}
-
-int f(int start, int end) {
-  if(start == end)
-    return ok(resv[start]) ? resv[start] : -1;
-  int mid = (start + end) / 2;
-  if(ok(resv[mid])) {
-    return max(resv[mid], f(mid+1, end));
-  } else {
-    return f(start, mid - 1);
-  }
+  return id[s];
 }
 
 int main() {
   int tc;
   scanf("%d", &tc);
   while(tc--) {
-    v.clear();
-    resv.clear();
-    memset(t, 0, sizeof t);
-    memset(prevt, 0, sizeof prevt);
-    memset(name, 0, sizeof name);
-    scanf("%d %d\n", &n, &b);
-    vector<II> subv;
-    while(n--) {
-      int price;
-      int quality;
-      scanf("%s %s %d %d\n", t, name, &price, &quality);
-      resv.push_back(quality);
-      if(strcmp(prevt, t) != 0) {
-	if(!subv.empty()) {
-	  sort(subv.begin(), subv.end(), _cmp);
-	  v.push_back(subv);
-	}
-	subv.clear();
-      }
-      subv.push_back(make_pair(price, quality));
-      memcpy(prevt, t, strlen(t) + 1);
+    scanf("%d %d", &n, &b);
+    cnt = 0;
+    for(int i = 0; i < n; i++) {
+      comp[i].clear();
     }
-    if(!subv.empty()) {
-      sort(subv.begin(), subv.end(), _cmp);
-      v.push_back(subv);
+    id.clear();
+    
+    int maxq = 0;
+    for(int i = 0; i < n; i++) {
+      char type[30], name[30];
+      int p, q;
+      scanf("%s %s%d%d", type, name, &p, &q);
+      maxq = max(maxq, q);
+      comp[getId(type)].push_back((Component){p, q});
     }
-    sort(resv.begin(), resv.end());
-    resv.resize(distance(resv.begin(), unique(resv.begin(), resv.end())));
-    printf("%d\n", f(0, resv.size() - 1));
+
+    int L = 0, R = maxq;
+    while(L < R) {
+      int M = L + (R - L + 1) / 2;
+      if(ok(M))
+	L = M;
+      else
+	R = M - 1;
+    }
+    printf("%d\n", L);
   }
   return 0;
 }
+

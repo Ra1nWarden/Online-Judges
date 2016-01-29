@@ -7,13 +7,13 @@
 using namespace std;
 
 map<int, vector<int> > adjList;
+map<int, int> factors;
 int n, m;
 const int maxn = 500000;
 int total[maxn+1];
-typedef pair<int, int> Node;
-Node nodes[maxn+1];
-int dp[maxn+1];
-map<Node, int> mods;
+const int maxv = 800;
+bool check[maxv+1];
+vector<int> primes;
 
 int cnt(int root) {
   if(total[root] != -1)
@@ -25,27 +25,64 @@ int cnt(int root) {
   return total[root] = ans;
 }
 
-int choose(int a, int b) {
-  Node k = make_pair(a, b);
-  if(b > a)
-    return 0;
-  if(b > a / 2)
-    return choose(a, a - b);
-  if(b == 0)
+void init() {
+  memset(check, true, sizeof check);
+  for(int i = 2; i <= maxv; i++) {
+    if(check[i])
+      primes.push_back(i);
+    for(int j = 0; j < primes.size(); j++) {
+      if(i * primes[j] > maxv)
+	break;
+      check[i * primes[j]] = false;
+      if(i % primes[j] == 0)
+	break;
+    }
+  }
+}
+
+void update(int num, bool inc) {
+  for(int i = 0; i < primes.size(); i++) {
+    int delta = 0;
+    while(num % primes[i] == 0) {
+      delta++;
+      num /= primes[i];
+    }
+    if(delta) {
+      if(inc) {
+	factors[primes[i]] += delta;
+      } else {
+	factors[primes[i]] -= delta;
+      }
+    }
+  }
+  if(num > 1) {
+    if(inc) {
+      factors[num]++;
+    } else {
+      factors[num]--;
+    }
+  }
+}
+
+int power(int b, int p) {
+  if(p == 0)
     return 1;
-  if(b == 1)
-    return a;
-  if(mods.count(k))
-    return mods[k];
-  return mods[k] = (choose(a-1, b) + choose(a-1, b-1)) % m;
+  int sub = power(b, p / 2);
+  sub = (sub * 1LL * sub) % m;
+  if(p & 1) {
+    return (sub * 1LL * b) % m;
+  } else {
+    return sub;
+  }
 }
 
 int main() {
+  init();
   int tc;
   scanf("%d", &tc);
   while(tc--) {
+    factors.clear();
     adjList.clear();
-    mods.clear();
     scanf("%d %d", &n, &m);
     for(int i = 2; i <= n; i++) {
       int p;
@@ -54,27 +91,16 @@ int main() {
     }
     memset(total, -1, sizeof total);
     int all = cnt(1);
-    for(int i = 1; i <= n; i++) {
-      nodes[i] = make_pair(total[i], i);
+    for(int i = 2; i < n; i++) {
+      update(i, true);
     }
-    sort(nodes + 1, nodes + n + 1);
-    for(int i = 1; i <= n; i++) {
-      int id = nodes[i].second;
-      if(total[id] == 1) {
-	dp[id] = 1;
-	continue;
-      }
-      int ans = 1;
-      int combi = 1;
-      int left = total[id] - 1;
-      for(int j = 0; j < adjList[id].size(); j++) {
-	ans = (ans * 1LL * dp[adjList[id][j]]) % m;
-	combi = (combi * 1LL * choose(left, total[adjList[id][j]])) % m;
-	left -= total[adjList[id][j]];
-      }
-      dp[id] = (ans * 1LL * combi) % m;
+    for(int i = 2; i <= n; i++)
+      update(total[i], false);
+    int ans = 1;
+    for(map<int, int>::iterator itr = factors.begin(); itr != factors.end(); itr++) {
+      ans = (ans * 1LL * power(itr->first, itr->second)) % m;
     }
-    printf("%d\n", dp[1]);
+    printf("%d\n", ans);
   }
   return 0;
 }

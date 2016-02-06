@@ -1,6 +1,8 @@
 *~
 *input
 *output
-*a.out
 *myOut
 *myout
+*.in
+*.out
+*.DS_Store

@@ -16,7 +16,7 @@ bool oks(int num) {
     if(add > k)
       return false;
   }
-  return add < n;
+  return add > -n && add <= 0;
 }
 
 bool okl(int num) {
@@ -64,33 +64,14 @@ int main() {
   }
   int ll = v[0], lr = v[n-1];
   while(ll != lr) {
-    int lm = ((ll + lr) >> 1);
+    int lm = ((ll + lr) >> 1) + 1;
     if(okl(lm)) {
-      lr = lm;
+      ll = lm;
     } else {
-      ll = lm + 1;
+      lr = lm - 1;
     }
   }
+  printf("ll=%d sl=%d\n", ll, sl);
   printf("%d\n", ll - sl);
-  
-  // bool ok = false;
-  // int small, large;
-  // for(int i = 1; i < n; i++) {
-  //   long long total = v[i] * 1LL * (i + 1);
-  //   long long time = total - prefix[i];
-  //   if(time >= (long long) k) {
-  //     small = v[i-1] + (((long long) k - v[i-1] * 1LL * i + prefix[i-1]) / i);
-  //     break;
-  //   }
-  // }
-  // for(int i = n - 2; i > 0; i--) {
-  //   long long total = v[i] * 1LL * (n - i);
-  //   long long time = postfix[i] - total;
-  //   if(time >= (long long) k) {
-  //     large = v[i+1] - ((long long) k - postfix[i+1] + v[i+1] * 1LL * (n - i - 1)) / (n - i - 1);
-  //     break;
-  //   }
-  // }
-  // printf("%d\n", large - small);
   return 0;
 }

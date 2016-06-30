@@ -43,6 +43,10 @@ int main() {
   }
   sort(savinga, savinga + n, greater<pair<double, int> >());
   sort(savingb, savingb + n, greater<pair<double, int> >());
+  if(savinga[0].first < 0 && savingb[0].first < 0) {
+    printf("%.10lf\n", total - max(savinga[0].first, savingb[0].first));
+    return 0;
+  }
   double res1 = max(savinga[0].first, 0.0);
   if(savingb[0].second == savinga[0].second) {
     res1 += max(savingb[1].first, 0.0);

@@ -5,7 +5,7 @@ My solutions to Online Judge Problems
 - POJ
 - HDOJ
 - HOJ
-- SPOJ
+- [SPOJ](https://www.spoj.com/status/ra1nwarden/)
 - LeetCode
 - [Codeforces](http://codeforces.com/profile/Ra1nWarden)
 - [TopCoder](http://community.topcoder.com/tc?module=MemberProfile&cr=23155143)

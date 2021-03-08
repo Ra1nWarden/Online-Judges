@@ -1,58 +1,60 @@
 #include <cstdio>
-#include <vector>
+#include <cstring>
 
 using namespace std;
 
 const int maxn = 700;
-vector<int> dp[maxn+5][maxn+5];
-int n;
 int v[maxn+5];
+bool dp[maxn+5][maxn+5][2];
+int n;
 
 int gcd(int a, int b) {
   return b == 0 ? a : gcd(b, a % b);
-}
-
-bool check(int i, int root, int j) {
-  if(root > i) {
-    bool ok = false;
-    for(int each : dp[i][root-1]) {
-      if(gcd(each, v[root]) > 1) {
-	ok = true;
-	break;
-      }
-    }
-    if(!ok)
-      return false;
-  }
-  if(j > root) {
-    bool ok = false;
-    for(int each : dp[root+1][j]) {
-      if(gcd(each, v[root]) > 1) {
-	ok = true;
-	break;
-      }
-    }
-    if(!ok)
-      return false;
-  }
-  return true;
 }
 
 int main() {
   scanf("%d", &n);
   for(int i = 0; i < n; i++)
     scanf("%d", &v[i]);
-  for(int i = 0; i < n; i++)
-    dp[i][i].push_back(v[i]);
-  for(int len = 2; len <= n; len++) {
+  memset(dp, false, sizeof dp);
+  for(int i = 0; i < n; i++) {
+    if(i) {
+      dp[i][i][0] |= gcd(v[i], v[i-1]) > 1;
+    }
+    if(i < n-1) {
+      dp[i][i][1] |= gcd(v[i], v[i+1]) > 1;
+    }
+  }
+  for(int len = 2; len < n; len++) {
     for(int i = 0; i + len <= n; i++) {
-      for(int root = i; root <= i + len - 1; root++) {
-	if(check(i, root, i+len-1)) {
-	  dp[i][i+len-1].push_back(root);
+      for(int root = i; root < i + len; root++) {
+	if(root > i && !dp[i][root-1][1]) {
+	  continue;
+	}
+	if(root < i + len - 1 && !dp[root+1][i+len-1][0]) {
+	  continue;
+	}
+	if(i) {
+	  dp[i][i+len-1][0] |= gcd(v[root], v[i-1]) > 1;
+	}
+	if(i + len - 1 < n - 1) {
+	  dp[i][i+len-1][1] |= gcd(v[root], v[i+len]) > 1;
+	}
+	if(dp[i][i+len-1][0] && dp[i][i+len-1][1]) {
+	  break;
 	}
       }
     }
   }
-  printf("%s\n", dp[0][n-1].empty() ? "No" : "Yes");
+  bool ok = false;
+  for(int root = 0; root < n; root++) {
+    bool left = root == 0 || dp[0][root-1][1];
+    bool right = root == n - 1 || dp[root+1][n-1][0];
+    if(left && right) {
+      ok = true;
+      break;
+    }
+  }
+  printf("%s\n", ok ? "Yes" : "No");
   return 0;
 }

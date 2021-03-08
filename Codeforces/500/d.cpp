@@ -1,53 +1,39 @@
 #include <cstdio>
-#include <vector>
-#include <cstring>
-#include <queue>
+#include <set>
 
 using namespace std;
 
 const int maxn = 200000;
-vector<int> adjMat[2][maxn+5];
-int vis[2][maxn+5];
-typedef pair<int, int> Node;
+int fa[maxn*2+5];
+int n, m;
 
-void bfs(int r, int c, int cnt) {
-  queue<Node> q;
-  q.push(make_pair(r, c));
-  while(!q.empty()) {
-    Node u = q.front();
-    q.pop();
-    vis[u.first][u.second] = cnt;
-    for(int i = 0; i < adjMat[u.first][u.second].size(); i++) {
-      int rr = u.first ^ 1;
-      int cc = adjMat[u.first][u.second][i];
-      if(vis[rr][cc]) {
-	continue;
-      }
-      q.push(make_pair(rr, cc));
-    }
-  }
+int idx(int r, int c) {
+  return r ? n + c : c;
+}
+
+int find_set(int a) {
+  return fa[a] == a ? a : fa[a] = find_set(fa[a]);
+}
+
+void union_set(int a, int b) {
+  fa[find_set(a)] = find_set(b);
 }
 
 int main() {
-  int n, m, q;
+  int q;
   scanf("%d%d%d", &n, &m, &q);
+  for(int i = 1; i <= n + m; i++) {
+    fa[i] = i;
+  }
   while(q--) {
     int r, c;
     scanf("%d%d", &r, &c);
-    adjMat[0][r].push_back(c);
-    adjMat[1][c].push_back(r);
+    union_set(idx(0, r), idx(1, c));
   }
-  memset(vis, 0, sizeof vis);
-  int cnt = 1;
-  for(int i = 0; i < 2; i++) {
-    for(int j = 1; j <= (i ? m : n); j++) {
-      if(vis[i][j]) {
-	continue;
-      }
-      bfs(i, j, cnt);
-      cnt++;
-    }
+  set<int> islands;
+  for(int i = 1; i <= n + m; i++) {
+    islands.insert(find_set(i));
   }
-  printf("%d\n", cnt-2);
+  printf("%d\n", islands.size() - 1);
   return 0;
 }
